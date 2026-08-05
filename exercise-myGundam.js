@@ -8,6 +8,7 @@ class Gundam {
     this.hp = 100;
     this.power = 20;
     this.inven = 5;
+    this.reloaded = false;
   }
 
   // a method to check status
@@ -71,19 +72,54 @@ class Pilot {
     }
 }
 
-class Spaceship extends Gundam {
-  constructor(name, type, lazerbeam) {
-    super(name, type); 
-    this.lazerbeam = lazerbeam;
-  }
+class Battle {
 
-  // POLYMORPHISM
-  // Replacing the generic sound with a bird-specific one
- 
+    constructor(gundam1, gundam2){
+        this.gundam1 = gundam1;
+        this.gundam2 = gundam2;
+        this.turn = 1;
+    }
 
-  fly() {
-    console.log(`${this.name} กางปีก บูสไอพ่น เตรียมพร้อมใช้งาน(${this.lazerbeam}) !`);
-  }
+    start() {
+    console.log("===== BATTLE START =====");
+    console.log(`${this.gundam1.name} VS ${this.gundam2.name}`);
+    }
+
+    nextTurn() {
+      this.gundam1.attack(this.gundam2)
+      if (this.gundam2.hp > 0) {
+        this.gundam2.attack(this.gundam1);
+    }
+      this.turn++;
+    }
+
+    showStatus() {
+      console.log("===STATUS===")
+      console.log(` ${this.gundam1.name} HP คงเหลือ ${this.gundam1.hp}`);
+      console.log(` ${this.gundam2.name} HP คงเหลือ ${this.gundam2.hp}`);
+    }
+    
+    reload() {
+     if (this.reloaded) {
+    console.log("ใช้ Reload ไปแล้ว");
+    return;
+    }
+
+     if (this.gundam.inven > 2) {
+    console.log("กระสุนยังเหลือเยอะ ไม่จำเป็นต้อง Reload");
+    return;
+    }
+
+     this.gundam.inven += 2;
+     this.reloaded = true;
+
+    console.log(`${this.gundam.name} Reload สำเร็จ! กระสุน = ${this.gundam.inven}`);
+    }
+    
+
+
+
+
 }
 
 /**
@@ -158,6 +194,7 @@ const RX78_2 = new Gundam("RX78_2", "prototype close-combat mobile suit");
 const Red_Zaku = new Gundam("Zaku_1", "The Red");
 const Amuro = new Pilot("Amuro Ray", "NewType Power", "Space colony");
 const Char = new Pilot("Char Aznable", "NewType", "Zeon Party");
+const battle = new Battle(RX78_2,Red_Zaku);
 
 // Add them to the universe
 myUnion.addGundam(RX78_2);
@@ -171,3 +208,4 @@ Amuro.ride(RX78_2);
 Char.ride(Red_Zaku);
 myUnion.showAllGundams()
 myHuman.showAllPilot()
+battle.start();
