@@ -33,7 +33,7 @@ class Gundam {
 
   get ammo() {
     if (this.inven <= 0 ) return "กระสุนหมดแล้ว ไม่สามารถโจมตีได้";
-    if (this.inven >= 1 )return "ปืนใหญ่เตรียมพร้อม";
+    if (this.inven >= 1 )return "ปืนลำแสงเตรียมพร้อม";
   }
 
 
@@ -133,6 +133,12 @@ class Human {
     console.log("\n=== Pilot ===");
 
     this.pilot.forEach((pilot) => {
+        if (pilot.gundam) {
+          console.log(`${pilot.name} เข้าควบคุม ${pilot.gundam.name}`)
+        } else {
+          console.log(`${pilot.name} ยังไม่มี Gundam`)
+        }
+
         console.log(`${pilot.name} พร้อมเข้าสู่สนามรบ`)
         console.log("----------------");
     })
