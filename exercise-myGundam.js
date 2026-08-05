@@ -5,48 +5,57 @@ class Gundam {
   constructor(name, type) {
     this.name = name;
     this.type = type;
-    this.damage = 0;
-
+    this.hp = 100;
+    this.power = 20;
+    this.inven = 5;
   }
 
   // a method to check status
   getStatus() {
-    if (this.damage <= 0) return "พร้อมรบ";
-    if (this.damage <= 30) return "เตรียมส่งซ่อมบำรุง";
-    return "ต้องซ่อมบำรุง";
+    if (this.hp <= 0) return "หุ่นรบโดนทำลาย";
+    if (this.hp <= 30) return "ใกล้ถึงขีดจำกัด";
+    return "พร้อมลุย";
   }
 
-  attack() {
-    this.damage += 10;
-    console.log(`${this.name} โจมตี! สร้างความเสียหาย ${this.damage}`);
+  attack(enemy) {
+    
+    if (this.inven <= 0) {
+      console.log(`${this.name} กระสุนหมด ไม่สามารถโจมตีได้`)
+      return;
+    }
+    this.inven--;
+    enemy.hp -= this.power
+    console.log(`${this.name} โจมตี! สร้างความเสียหาย ${this.power}  `);
+    console.log(`${enemy.name} ได้รับความเสียหาย ${this.power} `)
+    console.log(`${enemy.name} HP คงเหลือ ${enemy.hp}`)
+    
   }
 
-  get health() {
-    if (this.damage <= 0 ) return "อาวุธพร้อม เตรียมพร้อมรบ";
-    if (this.damage <= 30) return "ได้รับความเสียหายเล็กน้อย ยังสู้ไหว ! ";
-    return "ไม่พร้อมออกรบ";
+  get ammo() {
+    if (this.inven <= 0 ) return "กระสุนหมดแล้ว ไม่สามารถโจมตีได้";
+    if (this.inven >= 1 )return "ปืนใหญ่เตรียมพร้อม";
   }
 
 
 
   // logic to change internal state
   fix() {
-    if (this.damage <= 0) {
-      console.log(`${this.name} กันดั้มพร้อมแล้ว !`);
-    } else {
-      this.damage = this.damage - 10;
-      console.log(`${this.name} เตรียมซ่อมแซม หุ่นรบได้รับความเสียหาย  ${this.damage}.`);
+    this.hp += 15;
+
+    if(this.hp > 100) {
+       this.hp = 100;
     }
+    console.log(`${this.name} ทำการซ่อมแซมตัวเอง พลังฟื้นฟูเพิ่ม 15`)
+    console.log(`พลังชีวิตคงเหลือ ${this.hp}`)
+
   }
 
-  makeSound() {
-    console.log(`${this.name} Unit Ready.`);
-  }
+  
 }
 
 /**
  * INHERITANCE
- * Bird gets everything from Animal via 'extends'
+ * 
  */
 
 class Pilot {
@@ -70,9 +79,7 @@ class Spaceship extends Gundam {
 
   // POLYMORPHISM
   // Replacing the generic sound with a bird-specific one
-  makeSound() {
-    console.log(`${this.name} ฟิ้ววว`);
-  }
+ 
 
   fly() {
     console.log(`${this.name} กางปีก บูสไอพ่น เตรียมพร้อมใช้งาน(${this.lazerbeam}) !`);
@@ -81,12 +88,11 @@ class Spaceship extends Gundam {
 
 /**
  * THE Gundam union
- * A class to hold and run our animal objects
+ * 
  */
 class Union {
   constructor(unionName) {
     this.unionName = unionName;
-    this.pilots = [];
     this.gundams = [];
   }
 
@@ -95,44 +101,51 @@ class Union {
     console.log(`Added ${gundam.name} to the ${this.unionName}.`);
   }
 
-  addPilot(pilot){
-    this.pilots.push(pilot);
-    console.log(`Added Pilot ${pilot.name} to the ${this.unionName}`);
-  }
-
 showAllGundams() {
     console.log(`Welcome to ${this.unionName}`);
 
     console.log("\n=== Gundams ===");
 
     this.gundams.forEach((gundam) => {
-        console.log(
-            `${gundam.name} | Status: ${gundam.getStatus()} | Health: ${gundam.health}`
-        );
-
-        gundam.makeSound();
-        gundam.attack();
-        gundam.fix();
-
+        console.log(`${gundam.name} | Status: ${gundam.getStatus()} | Ammo: ${gundam.ammo}`);
         console.log("----------------");
     });
 
-    console.log("\n=== Pilots ===");
+    
 
-    this.pilots.forEach((pilot) => {
-        if (pilot.gundam) {
-            console.log(`${pilot.name} controls ${pilot.gundam.name}`);
-        } else {
-            console.log(`${pilot.name} has no Gundam`);
-        }
-    });
-}}
+
+}
+
+}
+class Human {
+  constructor(humanName) {
+    this.humanName = humanName;
+    this.pilot = [];
+  }
+
+   addPilot(pilot){
+    this.pilot.push(pilot);
+    console.log(`Added Pilot ${pilot.name} to the ${this.humanName}`);
+  }
+  
+  showAllPilot() {
+    
+    console.log("\n=== Pilot ===");
+
+    this.pilot.forEach((pilot) => {
+        console.log(`${pilot.name} พร้อมเข้าสู่สนามรบ`)
+        console.log("----------------");
+    })
+  
+  }}
+
 
 
 
 // --- EXECUTION ---
 
 const myUnion = new Union("The Universal Century");
+const myHuman = new Human("Mobile Suit Operator")
 
 // Create instances
 const RX78_2 = new Gundam("RX78_2", "prototype close-combat mobile suit");
@@ -143,11 +156,12 @@ const Char = new Pilot("Char Aznable", "NewType", "Zeon Party");
 // Add them to the universe
 myUnion.addGundam(RX78_2);
 myUnion.addGundam(Red_Zaku);
-myUnion.addPilot(Amuro);
-myUnion.addPilot(Char);
+myHuman.addPilot(Amuro);
+myHuman.addPilot(Char);
 
 // Run 
 
 Amuro.ride(RX78_2);
 Char.ride(Red_Zaku);
 myUnion.showAllGundams()
+myHuman.showAllPilot()
