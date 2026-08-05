@@ -49,15 +49,17 @@ class Gundam {
  * Bird gets everything from Animal via 'extends'
  */
 
-class Pilot extends Gundam {
-  constructor(name, type, colony) {
-    super(name, type); // Calls the parent constructor
-    this.colony = colony;
-  }
+class Pilot {
+    constructor(name, type, colony) {
+        this.name = name;
+        this.colony = colony;
+        this.type = type;
+        this.gundam = null;
+    }
 
-  control() {
-    console.log(`${this.name} กำลังควบคุมหุ่นรบจาก ${this.colony} fur.`);
-  }
+    ride(gundam) {
+        this.gundam = gundam;
+    }
 }
 
 class Spaceship extends Gundam {
@@ -82,30 +84,51 @@ class Spaceship extends Gundam {
  * A class to hold and run our animal objects
  */
 class Union {
-  constructor(UnionName) {
-    this.UnionName = UnionName;
-    this.Gundams = [];
+  constructor(unionName) {
+    this.unionName = unionName;
+    this.pilots = [];
+    this.gundams = [];
   }
 
   addGundam(gundam) {
-    this.Gundams.push(gundam);
-    console.log(`Added ${Gundam.name} to the ${this.UnionName}.`);
+    this.gundams.push(gundam);
+    console.log(`Added ${gundam.name} to the ${this.unionName}.`);
   }
 
-  showAllGundams() {
-    console.log(`\n--- ยิินดีต้อนรับเหล่านักบินผู้มีพลัง newtype และ เหล่าCoordinator \n--- ที่นี่คือ ${this.UnionName} --- \n--- และที่นี่คือสนามรบ ---`);
-    this.Gundams.forEach((Gundam) => {
-      // Accessing properties and calling methods
-      // console.log("here ->", animal);
-      // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(animal)));
-      console.log(`Gundam: ${Gundam.name} | Status: ${Gundam.getStatus()} | health: ${Gundam.health}`);
-      Gundam.makeSound();
-      Gundam.attack();
-      Gundam.fix();
-      console.log("-------------------");
-    });
+  addPilot(pilot){
+    this.pilots.push(pilot);
+    console.log(`Added Pilot ${pilot.name} to the ${this.unionName}`);
   }
-}
+
+showAllGundams() {
+    console.log(`Welcome to ${this.unionName}`);
+
+    console.log("\n=== Gundams ===");
+
+    this.gundams.forEach((gundam) => {
+        console.log(
+            `${gundam.name} | Status: ${gundam.getStatus()} | Health: ${gundam.health}`
+        );
+
+        gundam.makeSound();
+        gundam.attack();
+        gundam.fix();
+
+        console.log("----------------");
+    });
+
+    console.log("\n=== Pilots ===");
+
+    this.pilots.forEach((pilot) => {
+        if (pilot.gundam) {
+            console.log(`${pilot.name} controls ${pilot.gundam.name}`);
+        } else {
+            console.log(`${pilot.name} has no Gundam`);
+        }
+    });
+}}
+
+
 
 // --- EXECUTION ---
 
@@ -117,11 +140,14 @@ const Red_Zaku = new Gundam("Zaku_1", "The Red");
 const Amuro = new Pilot("Amuro Ray", "NewType Power", "Space colony");
 const Char = new Pilot("Char Aznable", "NewType", "Zeon Party");
 
-// Add them to the zoo
+// Add them to the universe
 myUnion.addGundam(RX78_2);
 myUnion.addGundam(Red_Zaku);
-myUnion.addGundam(Amuro);
-myUnion.addGundam(Char);
+myUnion.addPilot(Amuro);
+myUnion.addPilot(Char);
 
-// Run the routine
-myUnion.showAllGundams();
+// Run 
+
+Amuro.ride(RX78_2);
+Char.ride(Red_Zaku);
+myUnion.showAllGundams()
