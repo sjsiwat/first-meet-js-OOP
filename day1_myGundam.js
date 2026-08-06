@@ -97,6 +97,7 @@ class Battle {
       console.log("===STATUS===")
       console.log(` ${this.gundam1.name} HP คงเหลือ ${this.gundam1.hp}`);
       console.log(` ${this.gundam2.name} HP คงเหลือ ${this.gundam2.hp}`);
+      console.log("=========")
     }
     
     reload() {
@@ -209,3 +210,7 @@ Char.ride(Red_Zaku);
 myUnion.showAllGundams()
 myHuman.showAllPilot()
 battle.start();
+battle.nextTurn();
+battle.showStatus();
+battle.nextTurn();
+battle.showStatus();

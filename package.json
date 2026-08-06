@@ -1,0 +1,10 @@
+{
+"type": "module",
+
+"scripts": {
+    "day1": "node day1_myGundam.js",
+    "day2": "node day2_myGundam.js"
+}
+
+
+}
