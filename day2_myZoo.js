@@ -181,7 +181,7 @@ function showZooDirectory(){
 function displayZoo() {
     const topRow = zooPath
         .map(location => location.symbol)
-        .join(" ");
+        .join(" ____ ");
 
     const bottomRow = zooPath
         .map((location, index) => {
@@ -189,9 +189,9 @@ function displayZoo() {
                 return visitor.symbol;
             }
 
-            return "x";
+            return "  ";
         })
-        .join(" ");
+        .join(" ____ ");
 
     console.log(topRow);
     console.log(bottomRow);
@@ -199,7 +199,17 @@ function displayZoo() {
 
 
 function inspectLocation(){
-    
+    const currentLocation = zooPath[visitor.position]
+    console.log("\n ==== Current Location ====")
+    console.log(`📍 ${currentLocation.name}`);
+
+    if (currentLocation.animal) {
+        console.log(`${currentLocation.animal.symbol} ${currentLocation.animal.name}`);
+        console.log(`Species: ${currentLocation.animal.species}`);
+        }
+        else {
+        console.log(currentLocation.description);    
+        }
 }
 
 
@@ -214,8 +224,8 @@ console.log(`Welcome to the ${zooName} Explorer.`);
 showZooDirectory();
 displayZoo();
 askForCommand();
-
-/* 
 inspectLocation();
+/* 
+
 prepareAnimalFood();
  */
