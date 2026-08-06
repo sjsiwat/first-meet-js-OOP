@@ -18,11 +18,18 @@ class Animal{
         
     }
 
+    prepareFood() {
+        return " 🍖 Animal food .";
+    }
+
 }
 
 class Lion extends Animal {
     constructor(name){
-        super(name,"lion","🦁")
+        super(name,"Cat King","🦁")
+    }
+    prepareFood(){
+        return "🥩 Wagyu grill with toriyaki sauce";
     }
 }
 
@@ -30,6 +37,10 @@ class Lion extends Animal {
 class Tiger extends Animal {
     constructor(name){
         super(name,"Cheetah","🐯")
+    }
+    
+    prepareFood(){
+        return "🦌 Rein Deer  "
     }
 }
 
@@ -39,11 +50,18 @@ class Bird extends Animal {
     constructor(name){
         super(name,"Desert Eagle","🦅")
     }
+    prepareFood(){
+        return "🌰 Seeds of life";
+    }
 }
 
 class Bear extends Animal {
         constructor(name){
-        super(name,"Ice Bear","🐻")
+        super(name,"Ice Bear","🐻‍❄️")
+    }
+
+    prepareFood(){
+        return "🍯 100years Golden Honey";
     }
 }
 
@@ -122,7 +140,7 @@ const zooPath = [{
 ]
 
 
-const zooName = "Js terminal zoo"
+const zooName = "Siwat terminal zoo"
 
 
 
@@ -132,12 +150,12 @@ const zooName = "Js terminal zoo"
 
 function askForCommand() {
     rl.question(
-        "\n[l] Left | [r] Right | [i] Inspect | [d] Directory | [q] Quit\n> ", (answer) => {
+        "\n[l] Left | [r] Right | [i] Inspect | [d] Directory | [f] Food | [q] Quit\n> ", (answer) => {
             
             const command = answer.trim().toLowerCase();
 
       if (command === "q") {
-        console.log("\nThank you for visiting the JS Terminal Zoo.");
+        console.log("\nThank you for visiting the Siwat Terminal Zoo.");
         rl.close();
         return;
       }
@@ -158,6 +176,8 @@ function handleCommand(command) {
         inspectLocation();
     } else if(command === "d") {
         showZooDirectory();
+    } else if(command === "f") {
+        prepareAnimalFood();
     } else {
         console.log("Please enter r , i , d , or q ")
     }
@@ -213,7 +233,16 @@ function inspectLocation(){
 }
 
 
-function prepareAnimalFood(){}
+function prepareAnimalFood(){
+    const currentLocation = zooPath[visitor.position];
+    if (currentLocation.animal) {
+        const animal = currentLocation.animal;
+        console.log(`${visitor.name} prepares food for ${animal.symbol} ${animal.name}`);
+        console.log(`Food: ${animal.prepareFood()}`);
+    } else {
+        console.log(`🦴 There is no animal here 💀`);
+    }
+}
 
 
 
@@ -223,9 +252,5 @@ function prepareAnimalFood(){}
 console.log(`Welcome to the ${zooName} Explorer.`);
 showZooDirectory();
 displayZoo();
-askForCommand();
 inspectLocation();
-/* 
-
-prepareAnimalFood();
- */
+askForCommand();
