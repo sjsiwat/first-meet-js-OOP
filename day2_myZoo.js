@@ -22,14 +22,14 @@ class Animal{
 
 class Lion extends Animal {
     constructor(name){
-        super("name","lion","🦁")
+        super(name,"lion","🦁")
     }
 }
 
 
 class Tiger extends Animal {
     constructor(name){
-        super("name","Cheetah","🐯")
+        super(name,"Cheetah","🐯")
     }
 }
 
@@ -37,19 +37,38 @@ class Tiger extends Animal {
 
 class Bird extends Animal {
     constructor(name){
-        super("name","Desert Eagle","🦅")
+        super(name,"Desert Eagle","🦅")
     }
 }
 
 class Bear extends Animal {
         constructor(name){
-        super("name","Ice Bear","🐻")
+        super(name,"Ice Bear","🐻")
     }
 }
 
 
 class Visitor {
+    constructor(name,symbol) {
+        this.name = name;
+        this.symbol =symbol;
+        this.position = 0;
+    }
+    moveLeft() {
+    if (this.position === 0) {
+        return "You are at the entrance";
+    } else {
+        this.position--;
+        return `${this.name} Move Left`;}
+    }
 
+    moveRight(maxPosition) {
+    if (this.position === maxPosition) {
+        return "You are at the end of zoo";
+    } else {
+        this.position++;
+        return `${this.name} Move Right`;}
+    }
 }
 
 
@@ -62,7 +81,7 @@ const animals = [
     new Bear("Babii")
     ];
 
-
+const visitor = new Visitor("Yok","🤖");
 
 const zooPath = [{
     symbol: "🚪",
@@ -72,7 +91,7 @@ const zooPath = [{
   },
   {
     symbol: animals[0].symbol,
-    name: "Lion enclosure",
+    name: "Golden Lion",
     animal: animals[0],
   },
   {
@@ -82,17 +101,17 @@ const zooPath = [{
   },
   {
     symbol: animals[1].symbol,
-    name: "Elephant enclosure",
+    name: "Twin Head Tiger ",
     animal: animals[1],
   },
   {
     symbol: animals[2].symbol,
-    name: "Aviary",
+    name: "The Desert Eagle",
     animal: animals[2],
   },
   {
     symbol: animals[3].symbol,
-    name: "Bear habitat",
+    name: "Killer Bear",
     animal: animals[3],
   },
   {
@@ -104,7 +123,7 @@ const zooPath = [{
 
 
 const zooName = "Js terminal zoo"
-const visitor = new Visitor("Siwat")
+
 
 
 
@@ -144,13 +163,44 @@ function handleCommand(command) {
     }
 }
 
-function showZooDirectory(){}
+function showZooDirectory(){
+    console.log("\n=== Zoo Directory ===")
+    console.table(
+    animals.map((animal) => ({
+        name: animal.name,
+        species: animal.species,
+        symbol: animal.symbol,
+    })),
+);
+}
 
 
-function displayZoo(){}
 
 
-function inspectLocation(){}
+
+function displayZoo() {
+    const topRow = zooPath
+        .map(location => location.symbol)
+        .join(" ");
+
+    const bottomRow = zooPath
+        .map((location, index) => {
+            if (visitor.position === index) {
+                return visitor.symbol;
+            }
+
+            return "x";
+        })
+        .join(" ");
+
+    console.log(topRow);
+    console.log(bottomRow);
+}
+
+
+function inspectLocation(){
+    
+}
 
 
 function prepareAnimalFood(){}
@@ -163,6 +213,9 @@ function prepareAnimalFood(){}
 console.log(`Welcome to the ${zooName} Explorer.`);
 showZooDirectory();
 displayZoo();
+askForCommand();
+
+/* 
 inspectLocation();
 prepareAnimalFood();
-askForCommand();
+ */
