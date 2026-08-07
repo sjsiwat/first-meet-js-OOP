@@ -65,6 +65,20 @@ class Bear extends Animal {
     }
 }
 
+class Pokemon extends Animal {
+     constructor(name, species, symbol, food) {
+        super(name, species, symbol)
+        this.food = food
+    
+    }
+
+    prepareFood () {
+        return this.food
+    }
+
+        
+}
+
 
 class Visitor {
     constructor(name,symbol) {
@@ -140,7 +154,7 @@ const zooPath = [{
 ]
 
 
-const zooName = "Siwat terminal zoo"
+const zooName = "Siwat terminal zootopia"
 
 
 
@@ -155,7 +169,7 @@ function askForCommand() {
             const command = answer.trim().toLowerCase();
 
       if (command === "q") {
-        console.log("\nThank you for visiting the Siwat Terminal Zoo.");
+        console.log("\nThank you for visiting the Siwat Terminal Zootopia.");
         rl.close();
         return;
       }
@@ -179,7 +193,7 @@ function handleCommand(command) {
     } else if(command === "f") {
         prepareAnimalFood();
     } else {
-        console.log("Please enter r , i , d , or q ")
+        console.log("Please enter r , i , d , f , or q ")
     }
 }
 
@@ -245,12 +259,44 @@ function prepareAnimalFood(){
 }
 
 
+async function fetchPokemon(pokemonName) {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+        
+    if (!response.ok) throw new Error(`Status ${response.status}`)
+         const data = await response.json();
+
+    return new Pokemon(
+        data.name.charAt(0).toUpperCase() + data.name.slice(1),
+        data.types
+        .map(t => t.type.name)
+        .join("-"),
+        "👻","😱 Nightmare"
+    );
+
+
+}
 
 
 
+async function main() {
+    console.log(`Welcome ${visitor.name} to the --- ${zooName} ---.`);
 
-console.log(`Welcome to the ${zooName} Explorer.`);
-showZooDirectory();
-displayZoo();
-inspectLocation();
-askForCommand();
+    try {
+        const gengar = await fetchPokemon("gengar");
+        animals.push(gengar);
+        zooPath.splice(zooPath.length - 1, 0, {
+            symbol: gengar.symbol,
+            name: "Ghost House",
+            animal: gengar,
+        });
+    } catch (error) {
+        console.error("โหลด Pokémon ไม่สำเร็จ ข้ามไปก่อน:", error.message);
+    }
+
+    showZooDirectory();
+    displayZoo();
+    inspectLocation();
+    askForCommand();
+}
+
+main();
