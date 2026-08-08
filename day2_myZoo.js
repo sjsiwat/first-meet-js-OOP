@@ -58,7 +58,7 @@ class Bear extends Animal {
     }
 
     prepareFood(){
-        return "🍯 น้ำผึ้งจากหุบเขาวงกต3000ปี";
+        return "🍯 น้ำผึ้งจากสกัดจากดอกไม้โบราณ 3000 ปี";
     }
 }
 
@@ -210,7 +210,8 @@ function askForCommand() {
             const command = answer.trim().toLowerCase();
 
             if (command === "q") {
-                console.log("\nThank you for visiting the Siwat Terminal Zootopia.");
+                console.log(`\n ขอบคุณที่เข้ามาเยี่ยมชม Helltopia ${visitor.symbol}`);
+                console.log(`👋 แล้วพบกันใหม่ ${visitor.name} `)
                 rl.close();
                 return;
             }
@@ -349,7 +350,7 @@ async function addPokemonToZoo(pokemonName) {
         (a) => a.name.toLowerCase() === pokemon.name.toLowerCase()
     );
     if (exists) {
-        console.log(`⚠️  ${pokemon.name} อยู่ใน helltopia อยู่แล้ว`);
+        say(`⚠️  ${pokemon.name} อยู่ใน helltopia อยู่แล้ว`);
         return null;
     }
 
@@ -394,8 +395,8 @@ async function handleAddPokemon() {
 
 
 function mainRun() {
-    say(`Welcome ${visitor.name} to the --- ${zooName} ---`);
-    say("💡 กด [a] เพื่ออัญเชิญ Pokémon เข้ามาใน Helltopia ได้เลย");
+    say(` 🛖  Welcome ${visitor.name} to the --- ${zooName} 👽---`);
+    say("💡 กด [a] เพื่อทำการอัญเชิญ Pokémon เข้ามาใน Helltopia🔥 ได้เลย");
 
     showDirectory = true;
     askForCommand();
