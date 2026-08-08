@@ -8,8 +8,6 @@ const rl = createInterface({
 
 
 
-
-
 class Animal{
     constructor(name, species, symbol){
         this.name = name;
@@ -57,7 +55,7 @@ class Bird extends Animal {
 
 class Bear extends Animal {
         constructor(name){
-        super(name,"Ice Bear","🐻‍❄️")
+        super(name,"Giant Bear","🐻")
     }
 
     prepareFood(){
@@ -164,38 +162,42 @@ const zooName = "Siwat terminal zootopia"
 
 function askForCommand() {
     rl.question(
-        "\n[l] Left | [r] Right | [i] Inspect | [d] Directory | [f] Food | [q] Quit\n> ", (answer) => {
-            
+        "\n[l] Left | [r] Right | [i] Inspect | [d] Directory | [f] Food | [a] Add Pokémon | [q] Quit\n> ",
+        async (answer) => {
             const command = answer.trim().toLowerCase();
 
-      if (command === "q") {
-        console.log("\nThank you for visiting the Siwat Terminal Zootopia.");
-        rl.close();
-        return;
-      }
+            if (command === "q") {
+                console.log("\nThank you for visiting the Siwat Terminal Zootopia.");
+                rl.close();
+                return;
+            }
 
-      handleCommand(command);
-      displayZoo();
-      askForCommand();
+            await handleCommand(command);   // ← ห้ามลืม await เพราะ askforcommand ต้องรอประมวลผลคำสั่งจาก handle command
+            displayZoo();
+            askForCommand();
         }
-    )
+    );
 }
 
-function handleCommand(command) {
-    if(command === "l") {
-        console.log(visitor.moveLeft())
-    } else if(command === "r") {
-        console.log(visitor.moveRight(zooPath.length -1));
-    } else if(command === "i") {
+async function handleCommand(command) {
+    if (command === "l") {
+        console.log(visitor.moveLeft());
+    } else if (command === "r") {
+        console.log(visitor.moveRight(zooPath.length - 1));
+    } else if (command === "i") {
         inspectLocation();
-    } else if(command === "d") {
+    } else if (command === "d") {
         showZooDirectory();
-    } else if(command === "f") {
+    } else if (command === "f") {
         prepareAnimalFood();
+    } else if (command === "a") {
+        await handleAddPokemon();
     } else {
-        console.log("Please enter r , i , d , f , or q ")
+        console.log("Please enter l , r , i , d , f , a or q");
     }
 }
+
+
 
 function showZooDirectory(){
     console.log("\n=== Zoo Directory ===")
@@ -259,39 +261,106 @@ function prepareAnimalFood(){
 }
 
 
-async function fetchPokemon(pokemonName) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
-        
-    if (!response.ok) throw new Error(`Status ${response.status}`)
-         const data = await response.json();
+const DEFAULT_SYMBOL = "❓";
+const DEFAULT_FOOD = "🍎 Mystery Berry";
 
-    return new Pokemon(
-        data.name.charAt(0).toUpperCase() + data.name.slice(1),
-        data.types
-        .map(t => t.type.name)
-        .join("-"),
-        "👻","😱 Nightmare"
-    );
+const typeSymbols = {
+    
+        normal: "🐾", fire: "🔥", water: "💧", grass: "🌿",
+        electric: "⚡", ice: "❄️", fighting: "🥊", poison: "☠️",
+        ground: "⛰️", flying: "🕊️", psychic: "🔮", bug: "🐛",
+        rock: "🪨", ghost: "👻", dragon: "🐉", dark: "🌑",
+        steel: "⚙️", fairy: "🧚",
+    };
 
+ const typeFoods = {
+        fire: "🌶️ Spicy Charcoal Curry",
+        water: "🐟 Fresh Sashimi Platter",
+        grass: "🥬 Sunlight Salad",
+        electric: "🔋 Voltage Berry",
+        ghost: "😱 Nightmare",
+        psychic: "🍵 Meditation Tea",
+        dragon: "🍖 Ancient Dragon Steak",
+    };
 
+function ask(question) {
+return new Promise((resolve) => rl.question(question, resolve));
 }
 
 
 
-async function main() {
-    console.log(`Welcome ${visitor.name} to the --- ${zooName} ---.`);
+async function fetchPokemon(pokemonName) {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
 
-    try {
-        const gengar = await fetchPokemon("gengar");
-        animals.push(gengar);
-        zooPath.splice(zooPath.length - 1, 0, {
-            symbol: gengar.symbol,
-            name: "Ghost House",
-            animal: gengar,
-        });
-    } catch (error) {
-        console.error("โหลด Pokémon ไม่สำเร็จ ข้ามไปก่อน:", error.message);
+    if (!response.ok) throw new Error(`Status ${response.status}`);
+    const data = await response.json();
+
+    const types = data.types.map((t) => t.type.name);
+    const mainType = types[0];
+
+    return new Pokemon(
+        data.name.charAt(0).toUpperCase() + data.name.slice(1),
+        types.join("-"),
+        typeSymbols[mainType] ?? DEFAULT_SYMBOL,   // ← default symbol
+        typeFoods[mainType] ?? DEFAULT_FOOD
+    );
+}
+
+
+async function addPokemonToZoo(pokemonName) {
+    const pokemon = await fetchPokemon(pokemonName);
+
+    const exists = animals.some(
+        (a) => a.name.toLowerCase() === pokemon.name.toLowerCase()
+    );
+    if (exists) {
+        console.log(`⚠️  ${pokemon.name} อยู่ใน zoo อยู่แล้ว`);
+        return null;
     }
+
+    animals.push(pokemon);
+
+    const insertIndex = zooPath.length - 1;   // แทรกก่อน Food court
+    zooPath.splice(insertIndex, 0, {
+        symbol: pokemon.symbol,
+        name: `${pokemon.name} House`,
+        animal: pokemon,
+    });
+
+    if (visitor.position >= insertIndex) {
+        visitor.position++;
+    }
+
+    return pokemon;
+}
+
+
+async function handleAddPokemon() {
+    const input = await ask("\n🔍 พิมพ์ชื่อ Pokémon (เช่น pikachu): ");
+    const name = input.trim().toLowerCase();
+
+    if (!name) {
+        console.log("ยกเลิก");
+        return;
+    }
+
+    console.log("⏳ กำลังเรียก...");
+    try {
+        const pokemon = await addPokemonToZoo(name);
+        if (pokemon) {
+            console.log(
+                `✅ ${pokemon.symbol} ${pokemon.name} (${pokemon.species}) เข้ามาแล้ว!`
+            );
+        }
+    } catch (error) {
+        console.error(`❌ หา "${name}" ไม่เจอ:`, error.message);
+    }
+}
+
+
+function mainRun() {
+    console.log(`Welcome ${visitor.name} to the --- ${zooName} ---.`);
+    console.log("💡 กด [a] เพื่อเรียก Pokémon เข้ามาใน zoo ได้เลย");
 
     showZooDirectory();
     displayZoo();
@@ -299,4 +368,6 @@ async function main() {
     askForCommand();
 }
 
-main();
+
+
+mainRun();
